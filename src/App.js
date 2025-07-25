@@ -2,38 +2,40 @@ import React, { useEffect, useState } from 'react';
 
 const STRIPE_URL = 'https://buy.stripe.com/test_checkout_url'; // Replace with your real Stripe URL
 
-function getRefFromQuery() {
+function getReferralFromQuery() {
   const params = new URLSearchParams(window.location.search);
   return params.get('ref');
 }
 
-function getStoredRef() {
-  return localStorage.getItem('ref');
+function getStoredReferral() {
+  return localStorage.getItem('referral');
 }
 
-function storeRef(ref) {
-  if (ref) localStorage.setItem('ref', ref);
+function storeReferral(referral) {
+  if (referral) localStorage.setItem('referral', referral);
 }
 
-function buildStripeUrl(base, ref) {
-  if (!ref) return base;
+function buildStripeUrl(base, referral) {
+  if (!referral) return base;
   const url = new URL(base);
-  url.searchParams.set('ref', ref);
+  url.searchParams.set('ref', referral);
   return url.toString();
 }
 
 function App() {
-  const [ref, setRef] = useState(getStoredRef() || getRefFromQuery() || '');
+  const [referral, setReferral] = useState(getStoredReferral() || getReferralFromQuery() || '');
 
   useEffect(() => {
-    const queryRef = getRefFromQuery();
-    if (queryRef) {
-      storeRef(queryRef);
-      setRef(queryRef);
+    const queryReferral = getReferralFromQuery();
+    if (queryReferral) {
+      storeReferral(queryReferral);
+      setReferral(queryReferral);
+    } else if (getStoredReferral()) {
+      setReferral(getStoredReferral());
     }
   }, []);
 
-  const stripeUrl = buildStripeUrl(STRIPE_URL, ref);
+  const stripeUrl = buildStripeUrl(STRIPE_URL, referral);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-white px-4 py-8 text-center">
